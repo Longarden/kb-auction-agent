@@ -1,0 +1,32 @@
+# 명도비·관리비 등 추정 파라미터. 규제값이 아니라 우리가 정한 휴리스틱이다.
+
+# 점유 유형별 명도비 추정(원).
+# 점유 유형은 RightsAnalysisReport 에서 아래 순서로 결정적으로 파생한다:
+#   1) assumed_rights 에 LIEN 존재      -> LIEN_CLAIMED
+#   2) eviction_difficulty == HIGH      -> UNKNOWN_OCCUPANT
+#   3) eviction_difficulty == MID       -> TENANT_PARTIAL
+#   4) tenants 가 비어 있음              -> OWNER_OCCUPIED
+#   5) 그 외                             -> TENANT_FULL_DIVIDEND
+eviction_cost:
+  OWNER_OCCUPIED: 1500000
+  TENANT_FULL_DIVIDEND: 1000000   # 배당 전액 수령 임차인(협조적)
+  TENANT_PARTIAL: 3000000
+  UNKNOWN_OCCUPANT: 5000000
+  LIEN_CLAIMED: null              # 산정 불가 → 로더가 0으로 치환하고 경고를 남긴다
+
+unpaid_maintenance:
+  monthly_fee_per_m2: 3000        # 관리비 추정 단가(원/m²·월)
+  # 공실 개월 수 = min(cap, failed_count * per_fail + base)
+  # cap 36 은 공용관리비 소멸시효 3년(process.md §2.2d)을 반영한 상한이다.
+  vacancy_months: {per_fail: 2, base: 6, cap: 36}
+  common_area_ratio: 0.6          # 공용부분 비율(낙찰자 부담분)
+
+repair_reserve_ratio: 0.01        # 낙찰가 대비 수선충당 추정
+legal_bond_fee_ratio: 0.004       # 법무+채권할인 간이 추정(낙찰가 대비)
+
+tenant_deposit_fallback:
+  jeonse_ratio_of_appraisal: 0.6  # 보증금 불명 임차인: 감정가×60% 가정 + UNCERTAIN
+
+# 금액을 알 수 없는 특수권리의 보수 추정치(감정가 대비).
+# 0 으로 두면 가장 위험한 물건에서 가장 낙관적인 숫자가 나오므로 P4 위반이다.
+unknown_right_cost_ratio: 0.10

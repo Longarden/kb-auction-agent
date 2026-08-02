@@ -1,0 +1,38 @@
+{
+  "user_young": {
+    "label": "청년 실수요자 (무주택·생애최초)",
+    "annual_income": 42000000,
+    "cash_available": 80000000,
+    "existing_annual_debt_payment": 0,
+    "owned_house_count": 0,
+    "purpose": "OWNER_OCCUPY",
+    "age": 28,
+    "is_first_time_buyer": true,
+    "target_loan_years": 30,
+    "target_region_codes": ["30170", "28237"]
+  },
+  "user_invest": {
+    "label": "임대 투자자 (2주택 보유)",
+    "annual_income": 90000000,
+    "cash_available": 200000000,
+    "existing_annual_debt_payment": 12000000,
+    "owned_house_count": 2,
+    "purpose": "INVEST",
+    "age": 45,
+    "is_first_time_buyer": false,
+    "target_loan_years": 30,
+    "target_region_codes": ["28237"]
+  },
+  "user_tight": {
+    "label": "자금 여력이 빠듯한 청년",
+    "annual_income": 30000000,
+    "cash_available": 20000000,
+    "existing_annual_debt_payment": 0,
+    "owned_house_count": 0,
+    "purpose": "OWNER_OCCUPY",
+    "age": 26,
+    "is_first_time_buyer": true,
+    "target_loan_years": 30,
+    "target_region_codes": ["30170"]
+  }
+}

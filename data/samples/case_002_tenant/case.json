@@ -1,0 +1,23 @@
+{
+  "case_id": "인천지법-2025타경37781-1",
+  "court": "인천지방법원",
+  "case_number": "2025타경37781",
+  "item_number": 1,
+  "property_type": "MULTI_HOUSE",
+  "address": "인천광역시 부평구 부평동 567-8 새봄빌라 301호",
+  "region_code": "28237",
+  "regulation_zone": "NONE",
+  "building_area_m2": 45.0,
+  "land_area_m2": 28.4,
+  "built_year": 2012,
+  "floor": 3,
+  "appraisal_price": 180000000,
+  "min_bid_price": 126000000,
+  "failed_count": 1,
+  "sale_date": "2026-09-17",
+  "deposit_rate": 0.1,
+  "documents": {
+    "sale_spec_path": "data/samples/case_002_tenant/sale_spec.txt",
+    "registry_path": "data/samples/case_002_tenant/registry.txt"
+  }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "case_id": "ONBID-202600123-0001",
+    "source": "ONBID",
+    "address": "대전광역시 서구 둔산동 1234",
+    "property_type": "APARTMENT",
+    "appraisal_price": 160000000,
+    "min_bid_price": 112000000,
+    "failed_count": 1,
+    "sold_price": 134500000,
+    "sold_date": "2026-03-11",
+    "building_area_m2": 59.8
+  },
+  {
+    "case_id": "ONBID-202600188-0003",
+    "source": "ONBID",
+    "address": "인천광역시 부평구 부평동 567-8",
+    "property_type": "MULTI_HOUSE",
+    "appraisal_price": 180000000,
+    "min_bid_price": 126000000,
+    "failed_count": 1,
+    "sold_price": 141200000,
+    "sold_date": "2026-04-15",
+    "building_area_m2": 45.0
+  }
+]
