@@ -1,0 +1,23 @@
+{
+  "case_id": "대전지법-2025타경48802-3",
+  "court": "대전지방법원",
+  "case_number": "2025타경48802",
+  "item_number": 3,
+  "property_type": "COMMERCIAL",
+  "address": "대전광역시 유성구 봉명동 987 유성프라자 2층 205호",
+  "region_code": "30200",
+  "regulation_zone": "NONE",
+  "building_area_m2": 96.5,
+  "land_area_m2": 41.2,
+  "built_year": 2009,
+  "floor": 2,
+  "appraisal_price": 300000000,
+  "min_bid_price": 210000000,
+  "failed_count": 1,
+  "sale_date": "2026-09-24",
+  "deposit_rate": 0.1,
+  "documents": {
+    "sale_spec_path": "data/samples/case_003_lien/sale_spec.txt",
+    "registry_path": "data/samples/case_003_lien/registry.txt"
+  }
+}
