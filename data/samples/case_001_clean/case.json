@@ -1,0 +1,23 @@
+{
+  "case_id": "대전지법-2025타경51234-1",
+  "court": "대전지방법원",
+  "case_number": "2025타경51234",
+  "item_number": 1,
+  "property_type": "APARTMENT",
+  "address": "대전광역시 서구 둔산동 1234 한빛아파트 103동 902호",
+  "region_code": "30170",
+  "regulation_zone": "NONE",
+  "building_area_m2": 59.8,
+  "land_area_m2": 32.15,
+  "built_year": 2005,
+  "floor": 9,
+  "appraisal_price": 160000000,
+  "min_bid_price": 112000000,
+  "failed_count": 1,
+  "sale_date": "2026-09-10",
+  "deposit_rate": 0.1,
+  "documents": {
+    "sale_spec_path": "data/samples/case_001_clean/sale_spec.txt",
+    "registry_path": "data/samples/case_001_clean/registry.txt"
+  }
+}

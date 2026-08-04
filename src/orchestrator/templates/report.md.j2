@@ -1,0 +1,184 @@
+{# 안전입찰 리포트 템플릿 (process.md §6 T7).
+   P3: 산문에 숫자 리터럴을 쓰지 않는다. 모든 수치는 변수 치환 + won/eok/pct 필터.
+   guard: 밴드를 언급하는 블록에는 반드시 "참고 정보" 수식어가 함께 있어야 한다. #}
+# 안전입찰 리포트 — {{ case.case_id }}
+
+{{ case.court }} · {{ case.case_number }} · 물건번호 {{ case.item_number }}
+{{ case.address }}
+
+## 1. 신호등 요약
+
+- 판정: **{{ signal_label }}**
+{% if recommended_max_bid is not none %}
+- 감당 가능 상한: **{{ recommended_max_bid | won }}** ({{ recommended_max_bid | eok }})
+{% else %}
+- 감당 가능 상한: 제시하지 않습니다(입찰 비권장).
+{% endif %}
+- 감정가: {{ case.appraisal_price | won }} / 법정 최저매각가격: {{ case.min_bid_price | won }}
+- 유찰 횟수: {{ case.failed_count }}회 / 매각기일: {{ case.sale_date | ymd }}
+
+{% if red_reason %}
+> **입찰 비권장 사유** — {{ red_reason }}
+
+{% endif %}
+{{ ceiling_notice }}
+
+{{ rationale }}
+
+{% if warnings %}
+### 유의사항
+
+{% for w in warnings %}
+- {{ w }}
+{% endfor %}
+{% if warnings_need_band_note %}
+- 위 항목 중 낙찰가 구간에 관한 내용은 참고 정보이며, 응찰 여부의 근거가 아닙니다.
+{% endif %}
+{% endif %}
+
+## 2. 이 물건의 인수 리스크
+
+- 인수 리스크 등급: **{{ risk_grade }}등급**
+- 인수 예상 총액: **{{ rights.total_assumed_cost | won }}** ({{ rights.total_assumed_cost | eok }})
+- 명도 난이도: {{ eviction_label }}
+{% if rights.base_right %}
+- 말소기준권리: {{ rights.base_right.right_type.value }} / 접수일 {{ rights.base_right.registered_date | ymd }} / 권리자 {{ rights.base_right.holder }}
+{% else %}
+- 말소기준권리: 문서에서 확정하지 못했습니다. 보수적으로 인수 가능성을 열어 두고 계산했습니다.
+{% endif %}
+
+### 2.1 인수 예상 권리
+
+{% if rights.assumed_rights %}
+{% for r in rights.assumed_rights %}
+**[{{ loop.index }}] {{ r.right_type.value }} — {{ r.estimated_cost | won }}**
+
+- 내용: {{ r.description }}
+- 확신도: {{ confidence_label.get(r.confidence.value, r.confidence.value) }}
+- 근거: {{ r.evidence }}
+
+{% endfor %}
+{% else %}
+문서에서 확인된 인수 예상 권리가 없습니다. 다만 이는 제출된 문서 범위 안에서의 판단이며, 원문 확인이 필요합니다.
+{% endif %}
+
+### 2.2 임차인 현황
+
+{% if rights.tenants %}
+| 임차인 | 전입일 | 확정일자 | 보증금 | 대항력 | 배당요구 | 인수 예상 보증금 | 확신도 |
+|---|---|---|---|---|---|---|---|
+{% for t in rights.tenants %}
+| {{ t.name_masked }} | {{ t.move_in_date | ymd }} | {{ t.fixed_date | ymd }} | {{ t.deposit | won }} | {{ t.opposing_power | tri }} | {{ t.dividend_demanded | tri }} | {{ t.expected_assumed_deposit | won }} | {{ confidence_label.get(t.confidence.value, t.confidence.value) }} |
+{% endfor %}
+{% else %}
+현황조사 문서 범위에서 확인된 임차인이 없습니다.
+{% endif %}
+
+## 3. 감당 가능 상한과 근거
+
+| 항목 | 값 |
+|---|---|
+| 적용 LTV | {{ financing.applied_ltv | pct }} |
+| 방공제(소액임차 최우선변제) | {{ financing.room_deduction | won }} |
+| LTV 기준 최대 대출 | {{ financing.max_loan_by_ltv | won }} |
+| DSR 기준 최대 대출 | {{ financing.max_loan_by_dsr | won }} |
+| 최종 대출 가능액 | {{ financing.max_loan | won }} |
+| 제약 요인 | {{ binding_label }} |
+| 가정 금리(연) | {{ financing.assumed_rate | pct(2) }} |
+| 월 원리금(상한 기준) | {{ financing.monthly_payment_at_max | won }} |
+| **감당 가능 상한** | **{{ financing.max_bid_price | won }}** |
+
+계산 근거(설정 버전 {{ financing.config_version }}):
+
+{% for line in financing.calc_trace %}
+{{ loop.index }}. {{ line }}
+{% endfor %}
+
+## 4. 예상 낙찰가 구간 (**참고 정보**)
+
+{% if band %}
+아래 구간은 참고 정보로만 제공합니다. 이 서비스는 낙찰 여부를 예측하지 않으며, 이 구간을 근거로 응찰가를 올리거나 내리라고 권하지 않습니다. 판단의 기준은 3항의 감당 가능 상한입니다.
+
+| 구분 | 금액 | 성격 |
+|---|---|---|
+| p10 (하단) | {{ band.p10 | won }} | 참고 정보 |
+| p50 (중앙) | {{ band.p50 | won }} | 참고 정보 |
+| p90 (상단) | {{ band.p90 | won }} | 참고 정보 |
+| 감정가 대비(p50) | {{ band.appraisal_ratio_p50 | pct }} | 참고 정보 |
+
+- 산출 방식: {{ band.method }} (모델 버전 {{ band.model_version }})
+{% if band_is_prior %}
+- 관측 표본: **0건**. 시장 관측치가 아니라 사건 구조에서 유도한 참고 구간입니다. 실제 결과와 크게 다를 수 있습니다.
+{% elif band_sample_size is not none %}
+- 관측 표본: {{ band_sample_size }}건 (참고 정보의 근거 표본 수)
+{% endif %}
+{% if band_caveats %}
+
+구간 해석 시 유의사항(참고 정보):
+
+{% for c in band_caveats %}
+- {{ c }}
+{% endfor %}
+{% endif %}
+{% if band.comparables %}
+
+유사 사례(참고 정보):
+
+| 사건 | 위치 | 낙찰가 | 낙찰일 | 감정가 대비 | 유사도 |
+|---|---|---|---|---|---|
+{% for c in band.comparables %}
+| {{ c.case_id }} | {{ c.address_short }} | {{ c.sold_price | won }} | {{ c.sold_date | ymd }} | {{ c.appraisal_ratio | pct }} | {{ c.similarity | pct }} |
+{% endfor %}
+{% endif %}
+{% else %}
+이번 분석에서는 예상 낙찰가 구간을 산출하지 못했습니다. 이 구간은 참고 정보일 뿐이므로, 없더라도 3항의 감당 가능 상한과 5항의 실질 취득가로 판단할 수 있습니다.
+{% endif %}
+
+## 5. 총비용 브레이크다운
+
+가정 입찰가 {{ tco.bid_price | won }} 기준입니다.
+
+| 항목 | 금액 | 비고 |
+|---|---|---|
+{% for item in tco.breakdown %}
+| {{ item.get('label', '') }} | {{ item.get('amount') | won }} | {{ item.get('note', '') }} |
+{% endfor %}
+| **낙찰가 제외 초기비용 합계** | **{{ tco.total_upfront_excl_bid | won }}** | |
+| **실질 취득가** | **{{ tco.effective_acquisition_price | won }}** | {{ tco.effective_acquisition_price | eok }} |
+
+낙찰가만 보고 판단하면 위험합니다. 실제로 필요한 돈은 실질 취득가 {{ tco.effective_acquisition_price | won }}이며, 이 중 인수 권리 몫이 {{ tco.assumed_rights_cost | won }}입니다.
+
+## 6. 추천 금융 시나리오
+
+{% if products %}
+{% for p in products %}
+**{{ loop.index }}. {{ p.name }}** ({{ p.category }}) — {{ '신청 가능' if p.applicable else '요건 미충족' }}
+
+- 한도: {{ p.max_amount | won }}
+- 금리: {{ p.rate_note if p.rate_note else '정보 없음' }}
+- 경락잔금 용도 가능 여부: {{ p.applicable_to_auction | tri('가능', '불가') }}
+{% if p.requirements_met %}
+- 충족: {{ p.requirements_met | join(', ') }}
+{% endif %}
+{% if p.requirements_unmet %}
+- 미충족: {{ p.requirements_unmet | join(', ') }}
+{% endif %}
+{% if p.source_url %}
+- 출처: {{ p.source_url }} (확인일 {{ p.checked_date | ymd }})
+{% endif %}
+
+{% endfor %}
+{% if policy and policy.summary_note %}
+{{ policy.summary_note }}
+{% endif %}
+{% else %}
+매칭된 금융 상품이 없습니다. 금융기관 창구에서 경락잔금대출 가능 여부를 직접 확인하세요.
+{% endif %}
+
+## 7. 면책
+
+{{ disclaimer }}
+
+{% if not config_verified %}
+규제 수치(설정 버전 {{ config_version }})는 최신 확인 전 예시값입니다. 실제 입찰 전 LTV·DSR·취득세 규정을 반드시 재확인하세요.
+{% endif %}

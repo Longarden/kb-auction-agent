@@ -1,0 +1,9 @@
+[server]
+port = 8501
+runOnSave = false
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"

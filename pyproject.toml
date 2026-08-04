@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "safebid"
+version = "0.1.0"
+description = "KB AI Challenge — 경매 안전입찰 에이전트 (SafeBid)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pydantic>=2.7,<3",
+    "pyyaml>=6.0,<7",
+    "jinja2>=3.1,<4",
+    "python-dotenv>=1.0,<2",
+    "requests>=2.32,<3",
+    "streamlit>=1.37,<2",
+    "plotly>=6.0,<7",
+    "pandas>=2.2,<3",
+    "numpy>=1.26,<3",
+    "pyarrow>=14",
+]
+
+[project.optional-dependencies]
+ml = ["lightgbm>=4.5,<5", "scikit-learn>=1.5,<2"]
+pdf = ["pdfplumber>=0.11,<1"]
+llm = ["anthropic>=0.40"]
+dev = ["pytest>=8,<10"]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q -m 'not network'"
+markers = [
+    "network: 실제 API 호출. 인증키 필요. 기본 제외",
+]

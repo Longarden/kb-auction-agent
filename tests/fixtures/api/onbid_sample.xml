@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  온비드 공매 물건 목록(getKamcoPbctCltrList) 응답의 축약 샘플.
+  공개된 응답 구조를 보고 손으로 만든 픽스처이며 실제 수집 결과가 아니다.
+  parse_page 회귀 테스트 전용 — 네트워크 없이 파싱 로직만 검증한다.
+-->
+<response>
+  <header>
+    <resultCode>00</resultCode>
+    <resultMsg>NORMAL SERVICE.</resultMsg>
+  </header>
+  <body>
+    <items>
+      <item>
+        <PLNM_NO>202600123</PLNM_NO>
+        <PBCT_NO>202600123001</PBCT_NO>
+        <CLTR_NO>0001</CLTR_NO>
+        <CLTR_MNMT_NO>2026-0100-000001</CLTR_MNMT_NO>
+        <CLTR_NM>대전광역시 서구 둔산동 한빛아파트 103동 902호</CLTR_NM>
+        <CTGR_FULL_NM>부동산 / 주거용건물 / 아파트</CTGR_FULL_NM>
+        <LDNM_ADRS>대전광역시 서구 둔산동 1234</LDNM_ADRS>
+        <NMRD_ADRS>대전광역시 서구 둔산로 100</NMRD_ADRS>
+        <DPSL_MTD_NM>매각</DPSL_MTD_NM>
+        <PBCT_CLTR_STAT_NM>낙찰</PBCT_CLTR_STAT_NM>
+        <APSL_ASES_AVG_AMT>160000000</APSL_ASES_AVG_AMT>
+        <MIN_BID_PRC>112000000</MIN_BID_PRC>
+        <SCSBD_AMT>134500000</SCSBD_AMT>
+        <USCBD_CNT>1</USCBD_CNT>
+        <BULD_AREA>59.8</BULD_AREA>
+        <PBCT_BEGN_DTM>2026-03-09 10:00:00</PBCT_BEGN_DTM>
+        <PBCT_CLS_DTM>2026-03-11 11:00:00</PBCT_CLS_DTM>
+      </item>
+      <item>
+        <PLNM_NO>202600188</PLNM_NO>
+        <PBCT_NO>202600188002</PBCT_NO>
+        <CLTR_NO>0003</CLTR_NO>
+        <CLTR_MNMT_NO>2026-0100-000042</CLTR_MNMT_NO>
+        <CLTR_NM>인천광역시 부평구 부평동 새봄빌라 301호</CLTR_NM>
+        <CTGR_FULL_NM>부동산 / 주거용건물 / 다세대주택</CTGR_FULL_NM>
+        <LDNM_ADRS>인천광역시 부평구 부평동 567-8</LDNM_ADRS>
+        <NMRD_ADRS>인천광역시 부평구 부평대로 55</NMRD_ADRS>
+        <DPSL_MTD_NM>매각</DPSL_MTD_NM>
+        <PBCT_CLTR_STAT_NM>낙찰</PBCT_CLTR_STAT_NM>
+        <APSL_ASES_AVG_AMT>180000000</APSL_ASES_AVG_AMT>
+        <MIN_BID_PRC>126000000</MIN_BID_PRC>
+        <SCSBD_AMT>141200000</SCSBD_AMT>
+        <USCBD_CNT>1</USCBD_CNT>
+        <BULD_AREA>45.0</BULD_AREA>
+        <PBCT_BEGN_DTM>2026-04-13 10:00:00</PBCT_BEGN_DTM>
+        <PBCT_CLS_DTM>2026-04-15 11:00:00</PBCT_CLS_DTM>
+      </item>
+    </items>
+    <numOfRows>100</numOfRows>
+    <pageNo>1</pageNo>
+    <totalCount>2</totalCount>
+  </body>
+</response>

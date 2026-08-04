@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+data/raw/
+data/models/*.txt
+data/processed/*.parquet
+*.egg-info/
+.omc/state/
+.omc/logs/
+.omc/*.log

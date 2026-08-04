@@ -1,0 +1,91 @@
+# 규제 파라미터. 코드에서는 이 파일의 값만 읽는다(process.md P5).
+#
+# ⚠️ 아래 수치는 전부 "예시값"이다. LTV/DSR/취득세 중과/방공제는 정책 변동이 잦다.
+#    실제 데모·제출 전에 최신 값을 확인하고 verified: true 와 근거 URL을 채울 것.
+version: "2026-08-03"
+verified: false
+verified_date: null
+sources: []
+
+loan:
+  assumed_rate_annual: 0.045      # 월상환 계산용 가정 금리(예시)
+  dsr_limit: 0.40                 # 은행권 DSR 한도(예시)
+  stress_rate_addon: 0.0          # 스트레스 DSR 가산(미확인 → 0, verified:false 유지)
+  product_cap:
+    default: null                 # null = 한도 없음. 로더가 float("inf")로 치환한다.
+
+# 적용 LTV 테이블 (예시값)
+# 조회 실패 시 폴백 순서(로더 구현):
+#   1) 같은 property_type 내 0.0을 제외한 최소값
+#   2) 그래도 없으면 APARTMENT 프로필의 같은 (zone, bucket)
+#   3) calc_trace 에 폴백 사실을 기록
+# ※ "테이블 전역 최소"를 쓰면 0.00(대출금지)이 잡혀 모든 다세대·단독이
+#    무조건 대출 불가로 판정되므로 그 규칙은 쓰지 않는다.
+ltv:
+  APARTMENT:
+    NONE:        {house_0_1: 0.70, house_2plus: 0.60}
+    ADJUSTMENT:  {house_0_1: 0.50, house_2plus: 0.30}
+    SPECULATION: {house_0_1: 0.40, house_2plus: 0.00}   # 0.00 = LOAN_FORBIDDEN
+  OFFICETEL:
+    NONE:        {house_0_1: 0.70, house_2plus: 0.60}
+    ADJUSTMENT:  {house_0_1: 0.50, house_2plus: 0.30}
+    SPECULATION: {house_0_1: 0.40, house_2plus: 0.00}
+  MULTI_HOUSE:
+    NONE:        {house_0_1: 0.70, house_2plus: 0.60}
+    ADJUSTMENT:  {house_0_1: 0.50, house_2plus: 0.30}
+    SPECULATION: {house_0_1: 0.40, house_2plus: 0.00}
+  DETACHED:
+    NONE:        {house_0_1: 0.60, house_2plus: 0.50}
+    ADJUSTMENT:  {house_0_1: 0.45, house_2plus: 0.25}
+    SPECULATION: {house_0_1: 0.35, house_2plus: 0.00}
+  COMMERCIAL:
+    NONE:        {house_0_1: 0.60, house_2plus: 0.60}
+    ADJUSTMENT:  {house_0_1: 0.60, house_2plus: 0.60}
+    SPECULATION: {house_0_1: 0.60, house_2plus: 0.60}
+  LAND:
+    NONE:        {house_0_1: 0.50, house_2plus: 0.50}
+    ADJUSTMENT:  {house_0_1: 0.40, house_2plus: 0.40}
+    SPECULATION: {house_0_1: 0.30, house_2plus: 0.30}
+
+# 소액임차 최우선변제금(예시). 주거형만 차감하며 비주거는 0.
+# region_map 미등재 시 가장 보수적인 SEOUL(최대 공제)을 적용하고 경고를 남긴다.
+room_deduction:
+  SEOUL: 55000000
+  OVERCROWDED: 48000000           # 과밀억제권역·세종·용인·화성·김포 등
+  METRO: 28000000                 # 광역시 등
+  OTHER: 25000000
+  default_bucket: SEOUL           # 미등재 지역 폴백(보수적 = 한도를 가장 많이 깎음)
+  region_map:
+    "11680": "SEOUL"              # 서울 강남구
+    "11350": "SEOUL"              # 서울 노원구
+    "28237": "OVERCROWDED"        # 인천 부평구   (case_002)
+    "30170": "METRO"              # 대전 서구     (case_001)
+    "30200": "METRO"              # 대전 유성구   (case_003)
+    "30110": "METRO"              # 대전 동구
+
+acquisition_tax:
+  house:
+    tier_1_max: 600000000         # 6억
+    tier_1_rate: 0.01
+    tier_2_max: 900000000         # 9억
+    # 6~9억 구간 슬라이딩: rate = bid * slide_coef / slide_div - slide_const
+    slide_coef: 2
+    slide_div: 300000000
+    slide_const: 3
+    slide_pct_divisor: 100        # 위 결과가 %이므로 100으로 나눈다
+    tier_3_rate: 0.03
+    multi_house_adjust: {h2: 0.08, h3plus: 0.12}   # 조정대상지역 중과(예시)
+    multi_house_none:   {h2: null, h3plus: 0.08}   # null = 기본세율 적용
+  commercial_rate: 0.04
+  # 지방교육세는 본세율 연동(주택). 비주거는 별도 정률.
+  local_edu_tax_of_main_rate: 0.10       # 주택: 취득세율 × 10%
+  commercial_local_edu_rate: 0.004       # 비주거: 낙찰가 × 0.4%
+  # 농어촌특별세: 주택 전용 85m² 이하 비과세. 면적 불명이면 보수적으로 과세.
+  special_rural_tax_rate: 0.002
+  special_rural_exempt_area_m2: 85.0
+
+auction:
+  discount_per_fail: 0.20         # 유찰 저감률 폴백(법원별 상이). 사건에서 역산 가능하면 역산 우선
+  deposit_rate_default: 0.10
+  payment_deadline_days: 45       # v1 미사용(대출이자는 v2 스코프)
+  bid_round_unit: 100000          # 입찰가 라운딩 단위(10만원)
